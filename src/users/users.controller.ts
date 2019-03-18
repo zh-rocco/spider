@@ -22,11 +22,13 @@ export class UsersController {
   users = [{ name: 'rocco', age: 32 }];
 
   @Get()
-  getAllUsers(@Res() res: Response) {
-    res.status(HttpStatus.OK).json({
+  @HttpCode(200)
+  @Header('Cache-Control', 'no-cache')
+  getAllUsers() {
+    return {
       result: 0,
       data: this.users,
-    });
+    };
   }
 
   @Get(':id')
