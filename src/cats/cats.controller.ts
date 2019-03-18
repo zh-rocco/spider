@@ -1,3 +1,6 @@
+import * as Joi from 'joi';
+import { JoiValidationPipe } from './../pipe/joi-validation.pipe';
+import { HttpExceptionFilter } from './../filter/http-exception.filter';
 import { CreateCatDto } from './create-cat.dto';
 import {
   Controller,
@@ -8,11 +11,20 @@ import {
   Res,
   HttpStatus,
   Body,
+  UseFilters,
+  ForbiddenException,
+  UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Observable, of } from 'rxjs';
 import { CatsService } from './cats.service';
 import { Cat, ResponseStructure } from './cats.interface';
+
+const createCatSchema = Joi.object().keys({
+  name: Joi.string().required(),
+  age: Joi.number().required(),
+  breed: Joi.string().required(),
+});
 
 @Controller('cats')
 export class CatsController {
@@ -28,17 +40,18 @@ export class CatsController {
     };
   }
 
-  @Get('list-1')
+  @Get('promise')
   async findAllList1(): Promise<any[]> {
     return ['from', 'promise'];
   }
 
-  @Get('list-2')
+  @Get('observable')
   findAllList2(): Observable<any[]> {
     return of(['from', 'rxjs']);
   }
 
   @Post('create')
+  @UsePipes(new JoiValidationPipe(createCatSchema))
   async createCat(
     @Res() response: Response,
     @Body() createCatDto: CreateCatDto,
@@ -51,5 +64,16 @@ export class CatsController {
       result: 0,
       success: true,
     });
+  }
+
+  @Post('create-error')
+  @UseFilters(HttpExceptionFilter)
+  async createError(
+    @Res() response: Response,
+    @Body() createCatDto: CreateCatDto,
+  ) {
+    console.log('cat:', createCatDto);
+
+    throw new ForbiddenException();
   }
 }

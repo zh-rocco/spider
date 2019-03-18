@@ -1,3 +1,4 @@
+import { ValidationPipe } from './../pipe/validation.pipe';
 import {
   Controller,
   Get,
@@ -9,13 +10,11 @@ import {
   Body,
   HttpCode,
   Header,
+  HttpException,
+  UsePipes,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-
-interface CreateUserDto {
-  readonly name: string;
-  readonly age: number;
-}
+import { CreateUserDto } from './create-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -43,6 +42,7 @@ export class UsersController {
   }
 
   @Post('create')
+  @UsePipes(ValidationPipe)
   createUser(@Res() res: Response, @Body() createUserDto: CreateUserDto) {
     console.dir(createUserDto);
 
@@ -50,5 +50,12 @@ export class UsersController {
       result: 0,
       success: true,
     });
+  }
+
+  @Post('create-error')
+  createError(@Res() res: Response, @Body() createUserDto: CreateUserDto) {
+    console.dir(createUserDto);
+
+    throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
   }
 }
