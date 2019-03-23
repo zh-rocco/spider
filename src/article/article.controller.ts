@@ -10,6 +10,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  Param,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { Article } from './article.entity';
@@ -23,7 +24,7 @@ import {
 } from 'src/common/interface/common.interface';
 import { TransformInterceptor } from 'src/common/interceptor/transform.interceptor';
 
-@Controller('api/article')
+@Controller('api/article/aotu')
 // @UseInterceptors(TransformInterceptor)
 @UsePipes(new ValidationPipe({ skipMissingProperties: true }))
 export class ArticleController {
@@ -46,7 +47,7 @@ export class ArticleController {
     return this.articleService.update(id, data);
   }
 
-  @Get('getList')
+  @Get()
   async getList(@Query() query: ListQuery): Promise<ListResponse<Article>> {
     global.console.log('aotu/getList:', query);
 
@@ -59,10 +60,10 @@ export class ArticleController {
     return { result: 0, data, total };
   }
 
-  @Get('aotu/getById')
-  async get(@Query() query: { id: string }): Promise<CommonResponse<Article>> {
-    const { id } = query;
-    global.console.log('aotu/getById:', id);
+  @Get('detail/:id')
+  async get(@Param() param: { id: string }): Promise<CommonResponse<Article>> {
+    const { id } = param;
+    global.console.log('aotu/detail:', id);
 
     if (id) {
       const article = await this.articleService.findOne({ id } as Article);
@@ -72,6 +73,6 @@ export class ArticleController {
       };
     }
 
-    throw new HttpException('Miss query param "id".', HttpStatus.BAD_REQUEST);
+    throw new HttpException('Miss param "id".', HttpStatus.BAD_REQUEST);
   }
 }

@@ -6,7 +6,6 @@ export async function aotuContentCrawler(url: string) {
   const [page, browser] = await openPage(url);
 
   const article = await page.evaluate(() => {
-    const $ = (window as any).$;
     const html = $('.post-content').html() as string;
     const $meta = $('.post-meta');
 
@@ -27,8 +26,12 @@ export async function aotuContentCrawler(url: string) {
     process.exit(0);
   }
 
+  global.console.log(article);
+
   return article;
 }
 
-// 'https://aotu.io/notes/2017/08/28/getting-started-with-threejs/',
-// aotuContentCrawler();
+// 'https://aotu.io/notes/2017/08/28/getting-started-with-threejs/'
+aotuContentCrawler(
+  'https://aotu.io/notes/2017/08/28/getting-started-with-threejs/',
+);

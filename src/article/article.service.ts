@@ -56,6 +56,8 @@ export class ArticleService {
             'authorLink',
             'createTime',
           ],
+          // skip: 0,
+          // take: 10,
         },
         query,
       ),

@@ -99,6 +99,9 @@ export async function openPage(
   }
 
   await page.goto(url, options);
+  await page.addScriptTag({
+    url: 'https://code.jquery.com/jquery-3.3.1.min.js',
+  });
 
   return [page, browser];
 }
