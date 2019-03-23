@@ -1,4 +1,10 @@
-import { openPage, evaluateInfiniteScrollPage } from './puppeteer.utils';
+/// <reference types="jquery" />
+
+import {
+  openPage,
+  evaluateInfiniteScrollPage,
+  stopProcessIfNeededWithData,
+} from './puppeteer.utils';
 
 const url = 'https://aotu.io';
 
@@ -8,28 +14,29 @@ export async function aotuListCrawler() {
   const articles = await evaluateInfiniteScrollPage(
     page,
     (baseUrl: string) => {
-      function padWithHttp(source: string, str: string = 'https:') {
+      function padWithHttp(
+        source: string,
+        str: string = baseUrl.split('//')[0] || 'https:',
+      ) {
         if (/^\/\//.test(source)) {
           return str + source;
         }
         return source;
       }
-      const $: any = (window as any).$;
       const items: HTMLElement[] = [].slice.call($('.mod-post'));
       return items.map((article: HTMLElement) => {
-        const $article: JQuery = $(article);
+        const $article = $(article);
         return {
           title: $article.find('.mod-post-tit').text(),
           description: $article.find('.mod-post-desc').text(),
           cover: padWithHttp($article.find('img').attr('src')),
-          author: 'aotu',
-          content: '',
-          originUrl:
+          link:
             baseUrl +
             $article
               .find('a')
               .eq(0)
               .attr('href'),
+          platform: 'aotu',
         };
       });
     },
@@ -38,12 +45,5 @@ export async function aotuListCrawler() {
 
   await browser.close();
 
-  if (process && process.send && process.exit) {
-    process.send({ data: articles });
-    process.exit(0);
-  }
-
-  return articles;
+  return stopProcessIfNeededWithData(articles);
 }
-
-// aotuListCrawler();

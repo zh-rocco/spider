@@ -11,19 +11,10 @@ export class CreateArticleDto {
   cover: string;
 
   @IsString()
-  author: string;
+  link: string;
 
   @IsString()
-  authorLink: string;
-
-  @IsString()
-  createTime: string;
-
-  @IsString()
-  content: string;
-
-  @IsString()
-  originUrl: string;
+  platform: string;
 
   @IsInt()
   views: number;

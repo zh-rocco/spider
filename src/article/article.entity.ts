@@ -3,7 +3,7 @@ import { Common } from 'src/common/entity/common';
 
 @Entity()
 export class Article extends Common {
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar' })
   title: string;
 
   @Column({ type: 'text', nullable: true })
@@ -13,19 +13,10 @@ export class Article extends Common {
   cover: string;
 
   @Column({ type: 'varchar', nullable: true })
-  author: string;
+  link: string;
 
   @Column({ type: 'varchar', nullable: true })
-  authorLink: string;
-
-  @Column({ type: 'date', nullable: true })
-  createTime: string;
-
-  @Column({ type: 'text', nullable: true })
-  content: string;
-
-  @Column({ type: 'varchar', nullable: true })
-  originUrl: string;
+  platform: string;
 
   @Column({ type: 'int', default: 0 })
   views: number;

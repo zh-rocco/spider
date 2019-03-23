@@ -31,10 +31,10 @@ export class ArticleService {
   }
 
   async findOne(article: Article): Promise<Article> {
-    const { id, title, author } = article;
+    const { id, title } = article;
 
     return await this.articleRepository.findOne(
-      pickBy({ id, title, author }, identity),
+      pickBy({ id, title }, identity),
     );
   }
 
@@ -47,15 +47,7 @@ export class ArticleService {
           order: {
             createAt: 'ASC',
           },
-          select: [
-            'id',
-            'title',
-            'description',
-            'cover',
-            'author',
-            'authorLink',
-            'createTime',
-          ],
+          select: ['id', 'title', 'description', 'cover', 'platform', 'views'],
           // skip: 0,
           // take: 10,
         },

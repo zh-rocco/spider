@@ -1,18 +1,12 @@
-import { Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { SpiderService } from './spider.service';
 
-@Controller('api/spider')
-@UsePipes(new ValidationPipe({ skipMissingProperties: true }))
+@Controller('api/scrape')
 export class SpiderController {
   constructor(private readonly spiderService: SpiderService) {}
 
-  @Post('aotu/scrape-list')
-  scrapeList() {
-    return this.spiderService.scrapeList();
-  }
-
-  @Post('aotu/scrape-content')
-  scrapeContent() {
-    return this.spiderService.scrapeContent();
+  @Post('aotu')
+  scrapeAotuList() {
+    return this.spiderService.scrapeAotuList();
   }
 }

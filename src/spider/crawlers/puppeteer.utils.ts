@@ -1,3 +1,4 @@
+import { fork } from 'child_process';
 import * as puppeteer from 'puppeteer';
 import launchOptions from './puppeteer.config';
 
@@ -104,4 +105,30 @@ export async function openPage(
   });
 
   return [page, browser];
+}
+
+export function stopProcessIfNeededWithData(data?: any) {
+  if (process && process.send) {
+    process.send({ data });
+  } else {
+    return { data };
+  }
+}
+
+export function runScriptWithChildProcess(script: string): Promise<any[]> {
+  const child = fork(script, []);
+
+  return new Promise(resolve => {
+    child.on('error', err => {
+      resolve([err]);
+    });
+
+    child.on('exit', code => {
+      global.console.log(`stop child_process(${script}) with ${code}`);
+    });
+
+    child.on('message', ({ data }) => {
+      resolve([null, data]);
+    });
+  });
 }

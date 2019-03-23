@@ -1,0 +1,15 @@
+import { resolve } from 'path';
+import { runScriptWithChildProcess } from './puppeteer.utils';
+import { Article } from 'src/article/article.entity';
+
+export async function aotuTask(): Promise<Article[]> {
+  const [err, data] = await runScriptWithChildProcess(
+    resolve(__dirname, './aotu-list.crawler'),
+  );
+  global.console.log('aotu:', [err, data.length]);
+  if (err) {
+    return [];
+  } else {
+    return data;
+  }
+}
