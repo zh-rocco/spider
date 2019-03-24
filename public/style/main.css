@@ -1,0 +1,28 @@
+body {
+  font-size: 12px;
+}
+
+.page {
+  width: 960px;
+  margin: 0 auto;
+}
+
+.posts {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.post ~ .post {
+  margin-top: 4px;
+}
+
+.platform {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px;
+  background-color: tomato;
+  border-radius: 2px;
+  line-height: 1;
+  color: #fff;
+  user-select: none;
+}

@@ -19,6 +19,12 @@ export class TransformInterceptor<T>
     next: CallHandler,
   ): Observable<TransformedResponse<T>> {
     global.console.log('Interceptor Transform...');
-    return next.handle().pipe(map(data => ({ result: 0, data })));
+    return next.handle().pipe(
+      map(data => {
+        return typeof data === 'object'
+          ? Object.assign({ result: 0 }, data)
+          : { result: 0, data };
+      }),
+    );
   }
 }

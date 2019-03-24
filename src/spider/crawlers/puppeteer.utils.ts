@@ -6,7 +6,8 @@ import launchOptions from './puppeteer.config';
  * 设置 page 的默认参数
  *
  * @export
- * @param {Page} page
+ * @param {puppeteer.Page} page
+ * @returns {Promise<void>}
  */
 export async function setDefaultOptions(page: puppeteer.Page): Promise<void> {
   page.setDefaultNavigationTimeout(50 * 1000);
@@ -19,10 +20,10 @@ export async function setDefaultOptions(page: puppeteer.Page): Promise<void> {
  * reference: https://intoli.com/blog/scrape-infinite-scroll/
  *
  * @export
- * @param {Page} page
- * @param {() => any} evaluator
- * @param {number} [scrollDelay=300]
- * @returns {any}
+ * @param {puppeteer.Page} page
+ * @param {puppeteer.EvaluateFn} evaluator
+ * @param {{ delay?: number; args?: any[] }} [options={}]
+ * @returns {Promise<any>}
  */
 export async function evaluateInfiniteScrollPage(
   page: puppeteer.Page,
@@ -46,11 +47,55 @@ export async function evaluateInfiniteScrollPage(
 }
 
 /**
+ * 爬取分页加载的页面
+ *
+ * @export
+ * @param {puppeteer.Page} page
+ * @param {puppeteer.EvaluateFn} evaluator
+ * @param {{ delay?: number; args?: any[]; nextClassName?: string }} [options={}]
+ * @returns {Promise<any>}
+ */
+export async function evaluatePaginationPage(
+  page: puppeteer.Page,
+  evaluator: puppeteer.EvaluateFn,
+  options: { delay?: number; args?: any[]; nextClassName?: string } = {},
+): Promise<any> {
+  let next = true;
+  const result: any[] = [];
+  const { delay = 300, args = [], nextClassName } = options;
+
+  if (!nextClassName) {
+    return;
+  }
+
+  while (next) {
+    global.console.log('Pagination page:', result.length + 1);
+    await page.waitFor(delay);
+
+    const $nexBtn = await page.$(nextClassName);
+
+    try {
+      result.push(await page.evaluate(evaluator, ...args));
+    } catch (e) {} // tslint:disable-line:no-empty
+
+    if ($nexBtn) {
+      page.click(nextClassName);
+      await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+    } else {
+      next = false;
+    }
+  }
+
+  return result;
+}
+
+/**
  * 开启无图模式
  *
  * @export
- * @param {Page} page
+ * @param {puppeteer.Page} page
  * @param {string[]} [suffixes=['png', 'jpg']]
+ * @returns {Promise<void>}
  */
 export async function enableNoPictureMode(
   page: puppeteer.Page,
@@ -71,7 +116,8 @@ export async function enableNoPictureMode(
  * 关闭无图模式
  *
  * @export
- * @param {Page} page
+ * @param {puppeteer.Page} page
+ * @returns {Promise<void>}
  */
 export async function disableNoPictureMode(
   page: puppeteer.Page,
@@ -82,6 +128,17 @@ export async function disableNoPictureMode(
   });
 }
 
+/**
+ * 打开一个网页
+ *
+ * @export
+ * @param {string} url
+ * @param {puppeteer.DirectNavigationOptions} [options={
+ *     waitUntil: 'domcontentloaded',
+ *   }]
+ * @param {{ noPicture?: boolean }} [extraOptions={}]
+ * @returns {Promise<[puppeteer.Page, puppeteer.Browser]>}
+ */
 export async function openPage(
   url: string,
   options: puppeteer.DirectNavigationOptions = {
@@ -107,6 +164,13 @@ export async function openPage(
   return [page, browser];
 }
 
+/**
+ * 停止 node.js 子线程
+ *
+ * @export
+ * @param {*} [data]
+ * @returns
+ */
 export function stopProcessIfNeededWithData(data?: any) {
   if (process && process.send) {
     process.send({ data });
@@ -115,6 +179,13 @@ export function stopProcessIfNeededWithData(data?: any) {
   }
 }
 
+/**
+ * 使用子线程执行脚本
+ *
+ * @export
+ * @param {string} script
+ * @returns {Promise<any[]>}
+ */
 export function runScriptWithChildProcess(script: string): Promise<any[]> {
   const child = fork(script, []);
 
@@ -124,7 +195,7 @@ export function runScriptWithChildProcess(script: string): Promise<any[]> {
     });
 
     child.on('exit', code => {
-      global.console.log(`stop child_process(${script}) with ${code}`);
+      global.console.log(`stop child_process: "${script}" with ${code}`);
     });
 
     child.on('message', ({ data }) => {

@@ -8,7 +8,7 @@ import {
 
 const url = 'https://aotu.io';
 
-export async function aotuListCrawler() {
+export async function crawler() {
   const [page, browser] = await openPage(url);
 
   const articles = await evaluateInfiniteScrollPage(
@@ -47,3 +47,5 @@ export async function aotuListCrawler() {
 
   return stopProcessIfNeededWithData(articles);
 }
+
+crawler();

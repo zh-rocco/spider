@@ -1,5 +1,5 @@
 export interface ListResponse<T> {
-  result: 0 | 1;
+  result?: 0 | 1;
   data: T[];
   total: number;
 }
@@ -10,6 +10,6 @@ export interface ListQuery {
 }
 
 export interface CommonResponse<T> {
-  result: 0 | 1;
+  result?: 0 | 1;
   data: T;
 }

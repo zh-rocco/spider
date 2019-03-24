@@ -47,7 +47,15 @@ export class ArticleService {
           order: {
             createAt: 'ASC',
           },
-          select: ['id', 'title', 'description', 'cover', 'platform', 'views'],
+          select: [
+            'id',
+            'title',
+            'description',
+            'link',
+            'cover',
+            'platform',
+            'views',
+          ],
           // skip: 0,
           // take: 10,
         },
