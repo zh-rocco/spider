@@ -1,5 +1,7 @@
 ## Description
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/zh-rocco/spider.svg)](https://greenkeeper.io/)
+
 A blog crawler service, build with: NestJS, TypeScript, Puppeteer，MySQL.
 
 ## Preparation
